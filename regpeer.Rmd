@@ -1,0 +1,102 @@
+---
+title: "peer graded regression models"
+author: "sayonee"
+date: "11/6/2020"
+output: html_document
+---
+*Created with knitr*
+
+#### SUMMARY FOR THE FOLLOWING PROJECT
+This report is using the  the relationship between transmission type  and miles per gallon (MPG).we need t find which gives the higher mpg according to the dataset given
+#### we are Loading the given  Dataset
+we  thus load the dataset and convert to proper  factors.
+```{r results=='hide', mesp=FALSE}
+library(ggplot2)
+data(mtcars)
+head(mtcars, n=3)
+dim(mtcars)
+mtcars$cyl<- as.factor(mtcars$cyl)
+mtcars$vs<- as.factor(mtcars$vs)
+mtcars$am<- factor(mtcars$am)
+mtcars$ger <-factor(mtcars$gear)
+mtcars$cart <-factor(mtcars$carb)
+attach(mtcars)
+```
+
+#### we continue with the  Exploratory Analysis of the data set
+showing an  Exploratory Box graph 
+##### Statistical Inference
+testingtransmission type and Miles per galons
+```{r}
+trr <- t.test(mpg ~ am)
+trr$p.value
+```
+The T-Test is discarding the hypothesis such that the possible difference between all the transmission
+types is 0.  
+```{r}
+trr$estimate
+```
+The difference estimate between the 2 transmissions is 7.24494 MPG in favor of 
+manual.
+
+##### Regression Analysis
+Fit the full model of the data
+```{r results='hide'}
+fmt <- lm(mpg ~ ., data = mtcars)
+summary(fmt)  # results hidden
+summary(fmt)$coeffrdrr  # results hidden
+```
+Since none of the coefficients have a p-value less than 0.05 we cannot conclude
+which variables are more statistically significant. 
+
+Backward selection to determine which variables are most statistically 
+significant
+```{r results='hide'}
+sit <- step(fmt)
+summary(sit) # results hidden
+summary(sit)$coeffrdrr # results hidden
+```
+
+The new model has 4 variables (cyls, hp, wt, trans). thus we know that the
+Rsquared value of 0.8659 states that the given model suggests about 87% of the 
+varance. 
+.
+
+####Residue__Diagnostic
+Plot
+
+
+The plots conclude:
+
+1. The randomness of the Residuals vs. Fitted plotsuggests assumption of
+independence
+2. The points of the Normal Q-Q plot is following closeto the line concluding  that
+the distribution of residua is normal
+3. The Scale-Loca plot random distribution confirms the constant variance 
+assumption
+4. Since all points are within the lines, the Residus vs. Leverge 
+concludes that there are no outliers
+```{r}
+sum((abs(dfbetas(sit)))>1)
+```
+
+#### Conclusion
+There is a difference in MPG based on transmission type. A manual transmission
+will have a slight MPG boost. However, it seems that weight, horsepower, & 
+number of cylinders are more statistically significant when determining MPG.
+
+### Appendix Figures
+
+#### I
+```{r echo=FALSE}
+  boxplot(mpg ~ am, 
+          xlb="Transmission Type (0 = Automatic, 1 = Manual)", 
+          yl="MPG",
+          mn="MPG by Transmission Type")
+```
+
+#### II
+```{r echo=FALSE}
+par(mow = c(2, 2))
+plot(sit)
+```
